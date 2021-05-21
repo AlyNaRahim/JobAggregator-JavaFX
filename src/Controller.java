@@ -1,4 +1,5 @@
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -9,7 +10,12 @@ import model.DevKG;
 import view.JobViewCell;
 import model.Vacancy;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class Controller {
@@ -27,7 +33,7 @@ public class Controller {
     private RadioButton cRadio;
 
     @FXML
-    private RadioButton reactRadio;
+    private RadioButton netRadio;
 
     @FXML
     private RadioButton nodeRadio;
@@ -62,64 +68,18 @@ public class Controller {
         listView.setCellFactory(jobListView -> new JobViewCell());
         listView.setItems(dataList);
 
-        T1.selectedToggleProperty().addListener((ob, o, n) -> {
-            RadioButton rb = (RadioButton)T1.getSelectedToggle();
-
-            if (rb != null) {
-                headLabel.setText("Search results for " + rb.getText()+ " developers");
-            }
-
-            if (javaRadio.isSelected()) {
-                FilteredList<Vacancy> javaItems = new FilteredList<>(dataList);
-                listView.setItems(javaItems);
-                Predicate<Vacancy> containsJava = i -> i.getTitle().contains("Java");
-                javaItems.setPredicate(containsJava);
-            } else if (phpRadio.isSelected()) {
-                FilteredList<Vacancy> phpItems = new FilteredList<>(dataList);
-                listView.setItems(phpItems);
-                Predicate<Vacancy> filter = i -> i.getTitle().contains("PHP");
-                phpItems.setPredicate(filter);
-            } else if (cRadio.isSelected()) {
-                FilteredList<Vacancy> cItems = new FilteredList<>(dataList);
-                listView.setItems(cItems);
-                Predicate<Vacancy> containsC = i -> i.getTitle().contains("C#");
-                cItems.setPredicate(containsC);
-            } else if (reactRadio.isSelected()) {
-                FilteredList<Vacancy> reactItems = new FilteredList<>(dataList);
-                listView.setItems(reactItems);
-                Predicate<Vacancy> containsReact = i -> i.getTitle().contains("React");
-                reactItems.setPredicate(containsReact);
-            } else if (nodeRadio.isSelected()) {
-                FilteredList<Vacancy> nodeItems = new FilteredList<>(dataList);
-                listView.setItems(nodeItems);
-                Predicate<Vacancy> containsNode = i -> i.getTitle().contains("Node");
-                nodeItems.setPredicate(containsNode);
-            } else if (JSRadio.isSelected()) {
-                FilteredList<Vacancy> JSItems = new FilteredList<>(dataList);
-                listView.setItems(JSItems);
-                Predicate<Vacancy> containsJS = i -> i.getTitle().contains("Javascript");
-                JSItems.setPredicate(containsJS);
-            } else if (iOSRadio.isSelected()) {
-                FilteredList<Vacancy> iOSItems = new FilteredList<>(dataList);
-                listView.setItems(iOSItems);
-                Predicate<Vacancy> containsiOS = i -> i.getTitle().contains("iOS");
-                iOSItems.setPredicate(containsiOS);
-            } else if (androidRadio.isSelected()) {
-                FilteredList<Vacancy> androidItems = new FilteredList<>(dataList);
-                listView.setItems(androidItems);
-                Predicate<Vacancy> containsAndroid = i -> i.getTitle().contains("Android");
-                androidItems.setPredicate(containsAndroid);
-            }
-        });
+        T1.selectedToggleProperty().addListener(this::changed);
 
     }
 
     @FXML
     void onClickClear(ActionEvent event) {
-        System.out.println("c");
+        T1.selectToggle(null);
         FilteredList<Vacancy> clearFilter = new FilteredList<>(dataList);
         listView.setItems(clearFilter);
         clearFilter.setPredicate(null);
+        headLabel.setText("Search results for developer jobs");
+        avgLabel.setText("Median Salary");
     }
 
     @FXML
@@ -139,6 +99,83 @@ public class Controller {
         Platform.exit();
         System.exit(0);
     }
+
+
+    private void changed(ObservableValue<? extends Toggle> ob, Toggle o, Toggle n) {
+        RadioButton rb = (RadioButton) T1.getSelectedToggle();
+
+        if (rb != null) {
+            headLabel.setText("Search results for " + rb.getText() + " developers");
+        }
+
+        if (javaRadio.isSelected()) {
+            averageSalary("Java");
+        } else if (phpRadio.isSelected()) {
+            averageSalary("PHP");
+        } else if (cRadio.isSelected()) {
+            averageSalary("C#");
+        } else if (netRadio.isSelected()) {
+            averageSalary(".NET");
+        } else if (nodeRadio.isSelected()) {
+            averageSalary("Node");
+        } else if (JSRadio.isSelected()) {
+            averageSalary("JavaScript");
+        } else if (iOSRadio.isSelected()) {
+            averageSalary("iOS");
+        } else if (androidRadio.isSelected()) {
+            averageSalary("Android");
+        }
+    }
+
+    public FilteredList<Vacancy> filterList (String text) {
+        FilteredList<Vacancy> items = new FilteredList<>(dataList);
+        listView.setItems(items);
+        Predicate<Vacancy> containsText = i -> i.getTitle().contains(text);
+        items.setPredicate(containsText);
+        return items;
+    }
+
+    public void averageSalary (String text){
+        String usdString = "";
+        String kgsString = "";
+        double usdMedian = 0;
+        double kgsMedian = 0;
+
+        FilteredList<Vacancy> items = filterList(text);
+
+        for (int value = 0; value < items.size(); value++) {
+            if (items.get(value).getSalary().contains("USD")) {
+                usdString += (items.get(value).getSalary().strip().replace(" USD в месяц", "")
+                        .replace("От ", "").replace(" USD за проект", "")) + " - ";
+
+            } else if (items.get(value).getSalary().contains("KGS")) {
+                kgsString += (items.get(value).getSalary().strip().replace(" KGS в месяц", "")
+                        .replace("От ", "")) + " - ";
+            }
+        }
+
+        // String list for usd and kgs
+        if (!usdString.isEmpty()) {
+            List<String> usdList = Arrays.asList(usdString.split(" - "));
+            List<Integer> usdIntList = usdList.stream()
+                    .map(u -> Integer.parseInt(u))
+                    .collect(Collectors.toList());
+            Collections.sort(usdIntList);
+            usdMedian = usdIntList.get(usdIntList.size() / 2);
+        }
+
+        if (!kgsString.isEmpty()){
+            List<String> kgsList = Arrays.asList(kgsString.split(" - "));
+                List<Integer> kgsIntList = kgsList.stream()
+                        .map(k -> Integer.parseInt(k))
+                        .collect(Collectors.toList());
+                Collections.sort(kgsIntList);
+                kgsMedian = kgsIntList.get(kgsIntList.size() / 2);
+            }
+
+        avgLabel.setText("Median Salary: " + usdMedian + " USD and " + kgsMedian + " KGS");
+    }
+
 }
 
 

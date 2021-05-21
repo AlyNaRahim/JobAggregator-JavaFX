@@ -52,7 +52,7 @@
                   </RadioButton>
                   <RadioButton fx:id="phpRadio" mnemonicParsing="false" prefWidth="289.0" text="PHP" toggleGroup="$T1" />
                   <RadioButton fx:id="cRadio" mnemonicParsing="false" prefWidth="289.0" text="C#" toggleGroup="$T1" />
-                  <RadioButton fx:id="reactRadio" mnemonicParsing="false" prefWidth="289.0" text="React" toggleGroup="$T1" />
+                  <RadioButton fx:id="netRadio" mnemonicParsing="false" prefWidth="289.0" text=".NET" toggleGroup="$T1" />
                   <RadioButton fx:id="nodeRadio" mnemonicParsing="false" prefWidth="235.0" text="Node.Js" toggleGroup="$T1" />
                   <RadioButton fx:id="JSRadio" mnemonicParsing="false" prefWidth="289.0" text="JavaScript" toggleGroup="$T1" />
                   <RadioButton fx:id="iOSRadio" mnemonicParsing="false" prefWidth="289.0" text="iOS" toggleGroup="$T1" />
