@@ -33,7 +33,7 @@ public class DevKG {
                         v.setCompanyName(row.select("div.jobs-item-field.company").text().replace("Компания", "").strip());
                         v.setTitle(row.select("div.jobs-item-field.position").text().replace("Должность", "").strip());
                         v.setSalary(row.select("div.information div.jobs-item-field.price").text().replace("Оклад", "").strip());
-                        if (v.getSalary() == "") {
+                        if (v.getSalary() == "-") {
                             v.setSalary("Not mentioned");
                         }
                         v.setCountry("Kyrgyzstan");

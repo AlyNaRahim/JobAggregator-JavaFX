@@ -8,12 +8,12 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <Pane prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
@@ -40,10 +40,26 @@
          <children>
             <VBox prefHeight="399.0" prefWidth="282.0" spacing="8.0" style="-fx-border-color: black;">
                <children>
+                  <TextField fx:id="searchTextField" prefHeight="32.0" prefWidth="190.0" promptText="Search for jobs">
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
+                     <font>
+                        <Font name="Times New Roman Italic" size="13.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onClickSearch" prefHeight="32.0" prefWidth="134.0" style="-fx-background-color: gray;" text="Search" textFill="WHITE">
+                     <font>
+                        <Font name="Times New Roman Bold Italic" size="14.0" />
+                     </font>
+                  </Button>
                   <Label text="Filters">
                      <font>
                         <Font name="Times New Roman Bold" size="14.0" />
                      </font>
+                     <padding>
+                        <Insets top="30.0" />
+                     </padding>
                   </Label>
                   <RadioButton fx:id="javaRadio" mnemonicParsing="false" prefWidth="289.0" text="Java">
                      <toggleGroup>
@@ -56,7 +72,10 @@
                   <RadioButton fx:id="nodeRadio" mnemonicParsing="false" prefWidth="235.0" text="Node.Js" toggleGroup="$T1" />
                   <RadioButton fx:id="JSRadio" mnemonicParsing="false" prefWidth="289.0" text="JavaScript" toggleGroup="$T1" />
                   <RadioButton fx:id="iOSRadio" mnemonicParsing="false" prefWidth="289.0" text="iOS" toggleGroup="$T1" />
-                  <RadioButton fx:id="androidRadio" mnemonicParsing="false" prefWidth="289.0" text="Android" toggleGroup="$T1" />
+                  <RadioButton fx:id="androidRadio" mnemonicParsing="false" prefWidth="289.0" text="Android" toggleGroup="$T1">
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding></RadioButton>
                   <Button fx:id="clearButton" mnemonicParsing="false" onAction="#onClickClear" prefHeight="32.0" prefWidth="134.0" style="-fx-background-color: gray;" text="Clear" textFill="WHITE">
                      <font>
                         <Font name="Times New Roman Bold Italic" size="14.0" />
@@ -64,7 +83,7 @@
                   </Button>
                </children>
                <padding>
-                  <Insets left="30.0" top="20.0" />
+                  <Insets left="30.0" right="30.0" top="20.0" />
                </padding>
             </VBox>
             <VBox>
@@ -74,12 +93,12 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label fx:id="avgLabel" text="Average salary ">
+                  <Label fx:id="avgLabel" text="Median salary ">
                      <font>
                         <Font name="System Italic" size="14.0" />
                      </font>
                   </Label>
-                  <ListView fx:id="listView" prefHeight="399.0" prefWidth="574.0" style="-fx-background-color: white; -fx-border-style: outset;">
+                  <ListView fx:id="listView" prefHeight="399.0" prefWidth="574.0" style="-fx-background-color: white;">
                      <padding>
                         <Insets left="20.0" right="50.0" />
                      </padding>

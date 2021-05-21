@@ -13,12 +13,17 @@ import model.Vacancy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
 public class Controller {
+
+    @FXML
+    private TextField searchTextField;
+
+    @FXML
+    private Button searchButton;
 
     @FXML
     private RadioButton javaRadio;
@@ -53,10 +58,6 @@ public class Controller {
     @FXML
     private Label avgLabel;
 
-
-    @FXML
-    private Button clearButton;
-
     @FXML
     private ListView<Vacancy> listView;
 
@@ -69,7 +70,15 @@ public class Controller {
         listView.setItems(dataList);
 
         T1.selectedToggleProperty().addListener(this::changed);
+    }
 
+
+    @FXML
+    void onClickSearch(ActionEvent event) {
+        T1.selectToggle(null);
+        averageSalary(searchTextField.getText());
+        headLabel.setText("Search results for " + searchTextField.getText() + " developers");
+        searchTextField.setText("");
     }
 
     @FXML
@@ -87,10 +96,11 @@ public class Controller {
         Alert informationAlert = new Alert(Alert.AlertType.INFORMATION,"AlyNa Rahim");
         informationAlert.setTitle("About the App");
         informationAlert.setHeaderText("About the app - Copyrights");
-        informationAlert.setContentText("Created on: 20-May-2021\n" +
-                "By: AlyNa Rahim\n" +
-                "Contact: +92 3352992280\n" +
-                "Email: alyna.rahim_2021@ucentralasia.org");
+        informationAlert.setContentText("""
+                Created on: 20-May-2021
+                By: AlyNa Rahim
+                Contact: +92 3352992280
+                Email: alyna.rahim_2021@ucentralasia.org""");
         informationAlert.showAndWait();
     }
 
@@ -132,6 +142,9 @@ public class Controller {
         listView.setItems(items);
         Predicate<Vacancy> containsText = i -> i.getTitle().contains(text);
         items.setPredicate(containsText);
+        if (items.isEmpty()){
+            headLabel.setText("No results found!");
+        }
         return items;
     }
 
@@ -143,34 +156,31 @@ public class Controller {
 
         FilteredList<Vacancy> items = filterList(text);
 
-        for (int value = 0; value < items.size(); value++) {
-            if (items.get(value).getSalary().contains("USD")) {
-                usdString += (items.get(value).getSalary().strip().replace(" USD в месяц", "")
+        for (Vacancy item : items) {
+            if (item.getSalary().contains("USD")) {
+                usdString += (item.getSalary().strip().replace(" USD в месяц", "")
                         .replace("От ", "").replace(" USD за проект", "")) + " - ";
 
-            } else if (items.get(value).getSalary().contains("KGS")) {
-                kgsString += (items.get(value).getSalary().strip().replace(" KGS в месяц", "")
+            } else if (item.getSalary().contains("KGS")) {
+                kgsString += (item.getSalary().strip().replace(" KGS в месяц", "")
                         .replace("От ", "")) + " - ";
             }
         }
 
-        // String list for usd and kgs
+        // String list to integer list for usd and kgs
         if (!usdString.isEmpty()) {
             List<String> usdList = Arrays.asList(usdString.split(" - "));
             List<Integer> usdIntList = usdList.stream()
-                    .map(u -> Integer.parseInt(u))
-                    .collect(Collectors.toList());
-            Collections.sort(usdIntList);
+                    .map(Integer::parseInt).sorted().collect(Collectors.toList());
+
             usdMedian = usdIntList.get(usdIntList.size() / 2);
         }
 
         if (!kgsString.isEmpty()){
             List<String> kgsList = Arrays.asList(kgsString.split(" - "));
                 List<Integer> kgsIntList = kgsList.stream()
-                        .map(k -> Integer.parseInt(k))
-                        .collect(Collectors.toList());
-                Collections.sort(kgsIntList);
-                kgsMedian = kgsIntList.get(kgsIntList.size() / 2);
+                        .map(Integer::parseInt).sorted().collect(Collectors.toList());
+            kgsMedian = kgsIntList.get(kgsIntList.size() / 2);
             }
 
         avgLabel.setText("Median Salary: " + usdMedian + " USD and " + kgsMedian + " KGS");

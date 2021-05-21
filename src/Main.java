@@ -15,7 +15,7 @@ public class Main extends Application {
         //Label label = new Label("AlyNa");
 
 
-        primaryStage.setScene(new Scene(root, 900, 600));
+        primaryStage.setScene(new Scene(root, 900, 650));
         primaryStage.show();
     }
 
